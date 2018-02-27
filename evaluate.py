@@ -88,8 +88,10 @@ def evaluate(path):
     mNNT2 = 0.0
 
     for (queried, retrieved) in results:
-        x = categories_to_rel(queried, retrieved)[:cutoff]
         f = freqs[queried[0]]
+        # For standard evaluation strategy change the following line into
+        # x = categories_to_rel(queried, retrieved)[:cutoff]
+        x = categories_to_rel(queried, retrieved)[:f]
         # Sum up the retrieval scores
         mP += precision(x)
         mR += recall(x, f)
