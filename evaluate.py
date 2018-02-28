@@ -77,7 +77,6 @@ def evaluate(path):
     rgbd = read_dataset('rgbd.csv')
     freqs = freq_count(cad)
     results = load_results(path, rgbd, cad)
-    cutoff = 1000
 
     mP = 0.0
     mR = 0.0
@@ -89,8 +88,6 @@ def evaluate(path):
 
     for (queried, retrieved) in results:
         f = freqs[queried[0]]
-        # For standard evaluation strategy change the following line into
-        # x = categories_to_rel(queried, retrieved)[:cutoff]
         x = categories_to_rel(queried, retrieved)[:f]
         # Sum up the retrieval scores
         mP += precision(x)
@@ -103,13 +100,38 @@ def evaluate(path):
 
     n = len(results)
     print('num queries:', n)
-    print('mean precision: ', mP / n)
+    print('mean precision:', mP / n)
     print('mean recall:', mR / n)
     print('mean F1:', mF / n)
     print('mean AP:', mAP / n)
     print('mean NDCG: ', mNDCG / n)
     print('mean NNT1: ', mNNT1 / n)
     print('mean NNT2: ', mNNT2 / n)
+
+    # Plot PR-curve
+    cutoff = 1000
+    mean_precisions = np.zeros(cutoff, np.float64)
+    mean_recalls = np.zeros(cutoff, np.float64)
+    for (queried, retrieved) in results:
+        x = categories_to_rel(queried, retrieved)[:cutoff]
+        x = np.pad(x, (0, cutoff - len(x)), 'constant', constant_values=(0))
+        precisions = []
+        recalls = []
+        for k, _ in enumerate(x):
+            p = precision(x[:k+1])
+            r = recall(x[:k+1], freqs[queried[0]])
+            precisions.append(p)
+            recalls.append(r)
+        mean_precisions += precisions
+        mean_recalls += recalls
+    mean_precisions /= len(results)
+    mean_recalls /= len(results)
+
+    plt.plot(mean_recalls, mean_precisions)
+    plt.xlabel('Recall')
+    plt.ylabel('Precision')
+    plt.axis([0, 1, 0, 1.05])
+    plt.show()
 
 
 if __name__ == '__main__':

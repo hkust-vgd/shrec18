@@ -1,4 +1,4 @@
-# SHREC 2017: RGB-D Object-to-CAD Retrieval
+# SHREC 2018: RGB-D Object-to-CAD Retrieval
 
 This repository contains detailed description of the dataset and supplemental
 code for [SHREC 2018: RGB-D Object-to-CAD Retrieval](http://people.sutd.edu.sg/~saikit/projects/sceneNN/shrec18/index.html).
